@@ -22,12 +22,12 @@ public class App extends Application {
         // Font.loadFont(getClass().getResourceAsStream("/com/cuemymusic/fonts/Comfortaa-Regular.ttf"), 14);
         // Font.loadFont(getClass().getResourceAsStream("/com/cuemymusic/fonts/Comfortaa-Bold.ttf"), 14);
         
-        scene = new Scene(loadFXML("login"), 800, 600);
+        scene = new Scene(loadFXML("login"));
         scene.getStylesheets().add(getClass().getResource("/com/cuemymusic/css/styles.css").toExternalForm());
         
         stage.setScene(scene);
         stage.setTitle("CueMyMusic");
-        // We will make it fullscreen when entering main app, but for login a window is fine.
+        stage.sizeToScene(); // Auto-size to content
         stage.show();
     }
 

@@ -5,7 +5,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class MainController {
@@ -22,26 +23,24 @@ public class MainController {
     @FXML private Button fullscreenButton;
     
     private boolean isPlaying = false;
+    private boolean hasMedia = false; // flag to track if a song is loaded
 
     @FXML
     public void initialize() {
-        // Mock data
-        playlistsList.getItems().addAll("Workout Mix", "Chill Vibes", "Favorites");
-        localFilesList.getItems().addAll("Folder: /home/devCri/Music", "Folder: /Downloads");
-        recentSongsList.getItems().addAll("Migos ft. Drake - Walk It Talk It", "Travis Scott - SICKO MODE", "Future - Mask Off");
+        // Nessun dato fantoccio inserito
         
-        queueList.getItems().addAll("Migos ft. Drake - Walk It Talk It", "Post Malone - rockstar", "Kendrick Lamar - HUMBLE.");
-        
-        // Highlight current song in queue
-        queueList.getSelectionModel().select(0);
-        
-        // Set current song metadata
-        currentSongLabel.setText("Walk It Talk It");
-        currentArtistLabel.setText("Migos ft. Drake");
+        // Impostiamo testo di base per la barra
+        currentSongLabel.setText("Nessun brano in riproduzione");
+        currentArtistLabel.setText("-");
     }
 
     @FXML
     private void togglePlayPause() {
+        if (!hasMedia) {
+            showError("Nessun file multimediale selezionato", "Seleziona prima un brano dalla libreria per avviare la riproduzione.");
+            return;
+        }
+        
         isPlaying = !isPlaying;
         playPauseButton.setText(isPlaying ? "⏸" : "▶");
     }
@@ -50,5 +49,18 @@ public class MainController {
     private void toggleFullscreen() {
         Stage stage = (Stage) fullscreenButton.getScene().getWindow();
         stage.setFullScreen(!stage.isFullScreen());
+    }
+    
+    private void showError(String title, String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Errore");
+        alert.setHeaderText(title);
+        alert.setContentText(message);
+        
+        // Applica lo stile
+        alert.getDialogPane().getStylesheets().add(getClass().getResource("/com/cuemymusic/css/styles.css").toExternalForm());
+        alert.getDialogPane().getStyleClass().add("root-pane");
+        
+        alert.showAndWait();
     }
 }
