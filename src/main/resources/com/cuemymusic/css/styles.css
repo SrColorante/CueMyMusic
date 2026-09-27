@@ -1,0 +1,180 @@
+/* Minimalist Theme for CueMyMusic */
+
+* {
+    -fx-font-family: "Comfortaa", "Segoe UI", sans-serif;
+    -fx-text-fill: #e0e0e0;
+}
+
+.root-pane {
+    -fx-background-color: #121212;
+}
+
+.panel {
+    -fx-background-color: #1e1e1e;
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+}
+
+.title-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.subtitle-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #aaaaaa;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10 0;
+    -fx-text-fill: #ffffff;
+}
+
+/* Login Screen */
+.login-card {
+    -fx-background-color: #1e1e1e;
+    -fx-background-radius: 20;
+    -fx-padding: 30;
+    -fx-pref-width: 300;
+}
+
+.card-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #888888;
+}
+
+.input-field {
+    -fx-background-color: #2c2c2c;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #777777;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-border-width: 0;
+}
+
+.action-button {
+    -fx-background-color: #333333;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 10;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #444444;
+}
+
+.primary-button {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #121212;
+    -fx-font-weight: bold;
+}
+
+.primary-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.status-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #ffaa00;
+}
+
+/* Main App */
+.minimal-list {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-control-inner-background-alt: transparent;
+    -fx-border-color: transparent;
+}
+
+.minimal-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #cccccc;
+    -fx-padding: 8;
+    -fx-background-radius: 8;
+}
+
+.minimal-list .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.minimal-list .list-cell:filled:hover {
+    -fx-background-color: #2c2c2c;
+}
+
+.minimal-list .list-cell:filled:selected {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+}
+
+/* Queue List - highlighted current song */
+.queue-list .list-cell:filled:selected {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #121212;
+    -fx-font-weight: bold;
+}
+
+/* Waybar */
+.waybar {
+    -fx-background-color: #252525;
+    -fx-background-radius: 20;
+}
+
+.cover-art {
+    -fx-fill: #444444;
+}
+
+.song-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.song-artist {
+    -fx-font-size: 12px;
+    -fx-text-fill: #aaaaaa;
+}
+
+.control-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+}
+
+.control-button:hover {
+    -fx-text-fill: #aaaaaa;
+}
+
+.play-button {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #121212;
+    -fx-background-radius: 20;
+    -fx-padding: 8 12;
+}
+
+.play-button:hover {
+    -fx-background-color: #dddddd;
+    -fx-text-fill: #121212;
+}
+
+.progress-bar {
+    -fx-control-inner-background: #444444;
+}
+.progress-bar .track {
+    -fx-background-color: #444444;
+    -fx-background-radius: 5;
+}
+.progress-bar .thumb {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+}

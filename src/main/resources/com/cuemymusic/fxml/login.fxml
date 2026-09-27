@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cuemymusic.LoginController" styleClass="root-pane">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <Label text="CueMyMusic" styleClass="title-label"/>
+    <Label text="Scegli la modalità di accesso:" styleClass="subtitle-label"/>
+
+    <HBox spacing="40" alignment="CENTER">
+        <VBox spacing="15" alignment="CENTER" styleClass="login-card">
+            <Label text="Accesso Locale" styleClass="card-title"/>
+            <Label text="Usa l'app solo con i file locali" styleClass="card-subtitle"/>
+            <Button text="Avvia in Locale" onAction="#handleLocalAccess" styleClass="action-button"/>
+        </VBox>
+
+        <VBox spacing="15" alignment="CENTER" styleClass="login-card" fx:id="onlineLoginBox">
+            <Label text="Sincronizzazione Online" styleClass="card-title"/>
+            <Label text="Endpoint: CMM.cristianrenosto.party" styleClass="card-subtitle"/>
+            <TextField fx:id="usernameField" promptText="Username" styleClass="input-field"/>
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
+            <Button text="Accedi" onAction="#handleOnlineSync" styleClass="action-button, primary-button"/>
+            <Label fx:id="statusLabel" styleClass="status-label"/>
+        </VBox>
+    </HBox>
+</VBox>
