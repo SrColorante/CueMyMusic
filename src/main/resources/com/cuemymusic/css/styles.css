@@ -1,7 +1,8 @@
-/* Minimalist Theme for CueMyMusic */
+/* Minimalist Theme for CueMyMusic - Scaled Up Proportions */
 
 * {
     -fx-font-family: "Comfortaa", "Segoe UI", sans-serif;
+    -fx-font-size: 18px; /* Increased base size */
     -fx-text-fill: #e0e0e0;
 }
 
@@ -11,44 +12,45 @@
 
 .panel {
     -fx-background-color: #1e1e1e;
-    -fx-background-radius: 15;
-    -fx-padding: 15;
+    -fx-background-radius: 20;
+    -fx-padding: 25;
 }
 
 .title-label {
-    -fx-font-size: 32px;
+    -fx-font-size: 48px; /* Bigger */
     -fx-font-weight: bold;
     -fx-text-fill: #ffffff;
 }
 
 .subtitle-label {
-    -fx-font-size: 16px;
+    -fx-font-size: 22px; /* Bigger */
     -fx-text-fill: #aaaaaa;
 }
 
 .section-title {
-    -fx-font-size: 18px;
+    -fx-font-size: 26px; /* Bigger */
     -fx-font-weight: bold;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 0 0 15 0;
     -fx-text-fill: #ffffff;
 }
 
 /* Login Screen */
 .login-card {
     -fx-background-color: #1e1e1e;
-    -fx-background-radius: 20;
-    -fx-padding: 30;
-    -fx-pref-width: 300;
+    -fx-background-radius: 25;
+    -fx-padding: 40;
+    -fx-pref-width: 450;
+    -fx-min-width: 450;
 }
 
 .card-title {
-    -fx-font-size: 20px;
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
     -fx-text-fill: #ffffff;
 }
 
 .card-subtitle {
-    -fx-font-size: 12px;
+    -fx-font-size: 16px;
     -fx-text-fill: #888888;
 }
 
@@ -56,17 +58,19 @@
     -fx-background-color: #2c2c2c;
     -fx-text-fill: #ffffff;
     -fx-prompt-text-fill: #777777;
-    -fx-background-radius: 10;
-    -fx-padding: 10;
+    -fx-background-radius: 12;
+    -fx-padding: 15;
     -fx-border-width: 0;
+    -fx-font-size: 18px;
 }
 
 .action-button {
     -fx-background-color: #333333;
     -fx-text-fill: #ffffff;
-    -fx-background-radius: 10;
-    -fx-padding: 10 20;
+    -fx-background-radius: 12;
+    -fx-padding: 15 30;
     -fx-cursor: hand;
+    -fx-font-size: 20px;
 }
 
 .action-button:hover {
@@ -84,7 +88,7 @@
 }
 
 .status-label {
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
     -fx-text-fill: #ffaa00;
 }
 
@@ -99,8 +103,8 @@
 .minimal-list .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #cccccc;
-    -fx-padding: 8;
-    -fx-background-radius: 8;
+    -fx-padding: 12; /* More padding */
+    -fx-background-radius: 12;
 }
 
 .minimal-list .list-cell:empty {
@@ -126,7 +130,7 @@
 /* Waybar */
 .waybar {
     -fx-background-color: #252525;
-    -fx-background-radius: 20;
+    -fx-background-radius: 25;
 }
 
 .cover-art {
@@ -134,20 +138,20 @@
 }
 
 .song-title {
-    -fx-font-size: 16px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #ffffff;
 }
 
 .song-artist {
-    -fx-font-size: 12px;
+    -fx-font-size: 18px;
     -fx-text-fill: #aaaaaa;
 }
 
 .control-button {
     -fx-background-color: transparent;
     -fx-text-fill: #ffffff;
-    -fx-font-size: 18px;
+    -fx-font-size: 28px;
     -fx-cursor: hand;
 }
 
@@ -158,8 +162,9 @@
 .play-button {
     -fx-background-color: #ffffff;
     -fx-text-fill: #121212;
-    -fx-background-radius: 20;
-    -fx-padding: 8 12;
+    -fx-background-radius: 30;
+    -fx-padding: 10 20;
+    -fx-font-size: 32px;
 }
 
 .play-button:hover {
@@ -172,9 +177,9 @@
 }
 .progress-bar .track {
     -fx-background-color: #444444;
-    -fx-background-radius: 5;
+    -fx-background-radius: 8;
 }
 .progress-bar .thumb {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 10;
+    -fx-background-radius: 15;
 }
