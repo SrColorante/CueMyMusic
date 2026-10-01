@@ -122,3 +122,52 @@ precedente/successiva non hanno handler associato.
 ## Licenza
 
 Non presente nel repository.
+
+## Further reading
+
+External material covering the same ground. The cross-repo map, with the same
+links for all seven projects, is in `~/Progetti/RESOURCES.md`.
+
+CueMyMusic has the smallest footprint in this collection, so the honest mapping
+is narrower than for the other six. The one substantial gap in the project — no
+audio playback, with `javafx-media` declared but unused — is a Web Audio
+problem, and that is where the material concentrates.
+
+### Build it from scratch
+
+- [Awesome Web Audio](https://github.com/notthetup/awesome-webaudio) — the
+  closest thing to a syllabus for what `javafx-media` would need: playback
+  state, buffering, and the cue-point model the README lists as missing.
+- [Crafting interpreters](http://www.craftinginterpreters.com/) *(Java)* —
+  background for the screen-graph navigation in `App.java`, a small state
+  machine over FXML-loaded scenes.
+
+### Books
+
+- [Google's Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+- [Introduction to Programming Using Java](https://math.hws.edu/javanotes) — David J. Eck, with exercises
+
+### Design system
+
+The dark theme in `resources/com/cuemymusic/css/styles.css` is a design system
+in the ordinary sense — tokens, spacing, a palette applied globally and to
+dialogs — so:
+
+- [Awesome Design Systems](https://github.com/klaufel/awesome-design-systems)
+- [roadmap.sh/design-system](https://roadmap.sh/design-system)
+- [Awesome Accessibility](https://github.com/brunopulis/awesome-a11y) — the
+  dialogs and the fullscreen player bar have no keyboard-navigation or focus
+  handling described in `docs.md`
+
+### Reference
+
+- [Awesome Java](https://github.com/akullpp/awesome-java)
+- [roadmap.sh/java](https://roadmap.sh/java)
+- [Project-based learning, Java section](https://github.com/practical-tutorials/project-based-learning#java)
+
+### Not applicable
+
+- **Build your own X** — a media player is not a compiler, a database, a
+  browser or a network. That repo has no matching section.
+- **System design primer** — a single-user desktop app with no server, no
+  shared state and no partial failure.
