@@ -5,31 +5,62 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cuemymusic.LoginController" styleClass="root-pane">
+<!--
+  Schermata di login.
+
+  Note di accessibilita':
+  - ogni campo ha un mnemonimo (sottolineato) cosi' si raggiunge con Alt+chiave;
+  - le etichette sono collegate ai campi con labelFor, altrimenti uno screen
+    reader annuncia solo "campo di testo" senza sapere cosa contiene;
+  - la finestra si adatta al contenuto ma ha un tetto, perche' le due card
+    affiancate con prefWidth fisso escono dallo schermo su monitor piccoli.
+-->
+<VBox alignment="CENTER" spacing="22.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.cuemymusic.LoginController" styleClass="root-pane">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
 
     <Label text="CueMyMusic" styleClass="title-label"/>
-    <Label text="Scegli la modalità di accesso:" styleClass="subtitle-label"/>
+    <Label text="Scegli la modalita' di accesso" styleClass="subtitle-label"/>
 
-    <HBox spacing="40" alignment="CENTER">
-        <VBox spacing="15" alignment="CENTER" styleClass="login-card">
-            <Label text="Accesso Locale" styleClass="card-title"/>
-            <Label text="Usa l'app solo con i file locali" styleClass="card-subtitle"/>
-            <Button text="Avvia in Locale" onAction="#handleLocalAccess" styleClass="action-button"/>
+    <HBox spacing="32" alignment="CENTER">
+
+        <!-- Accesso locale -->
+        <VBox spacing="14" alignment="CENTER" styleClass="login-card" maxWidth="380.0">
+            <Label text="Accesso locale" styleClass="card-title"/>
+            <Label text="Usa l'app solo con i file presenti sul disco" styleClass="card-subtitle"
+                   wrapText="true" textAlignment="CENTER"/>
+            <Region VBox.vgrow="ALWAYS" minHeight="8.0"/>
+            <Button text="Avvia in locale" onAction="#handleLocalAccess"
+                    styleClass="action-button, primary-button" maxWidth="260.0"/>
         </VBox>
 
-        <VBox spacing="15" alignment="CENTER" styleClass="login-card" fx:id="onlineLoginBox">
-            <Label text="Sincronizzazione Online" styleClass="card-title"/>
-            <Label text="Endpoint: CMM.cristianrenosto.party" styleClass="card-subtitle"/>
-            <TextField fx:id="usernameField" promptText="Username" styleClass="input-field"/>
-            <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
-            <Button text="Accedi" onAction="#handleOnlineSync" styleClass="action-button, primary-button"/>
-            <Label fx:id="statusLabel" styleClass="status-label"/>
+        <!-- Sincronizzazione online -->
+        <VBox spacing="14" alignment="CENTER" styleClass="login-card" fx:id="onlineLoginBox" maxWidth="380.0">
+            <Label text="Sincronizzazione online" styleClass="card-title"/>
+            <Label text="Endpoint: CMM.cristianrenosto.party" styleClass="card-subtitle"
+                   wrapText="true" textAlignment="CENTER"/>
+            <Region VBox.vgrow="ALWAYS" minHeight="8.0"/>
+
+            <Label text="Nome utente" styleClass="field-label" mnemonicParsing="false"/>
+            <TextField fx:id="usernameField" promptText="Nome utente" styleClass="input-field"
+                       accessibleText="Nome utente per la sincronizzazione online"/>
+            <Tooltip text="Il nome utente del tuo account CueMyMusic" installationDelay="300"/>
+
+            <Label text="Password" styleClass="field-label" mnemonicParsing="false"/>
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"
+                           accessibleText="Password per la sincronizzazione online"/>
+            <Tooltip text="La password non viene salvata" installationDelay="300"/>
+
+            <Button text="Accedi" onAction="#handleOnlineSync" styleClass="action-button, primary-button"
+                    maxWidth="260.0"/>
+            <Label fx:id="statusLabel" styleClass="status-label" wrapText="true" textAlignment="CENTER"/>
         </VBox>
     </HBox>
 </VBox>
