@@ -5,13 +5,14 @@
 > Player musicale desktop in JavaFX, orientato al concetto di *cue point* e alle
 > playlist da DJ (stile "walk it / talk it").
 
-**Stato: prototipo di interfaccia.** L'applicazione si avvia, disegna le schermate e
-cambia vista correttamente, ma **non riproduce audio e non legge alcun dato**: la
-libreria, le playlist, la cronologia e la coda restano vuote. Vedi
+**Stato: prototipo funzionante a metà.** La libreria locale si popola davvero
+scandendo il filesystem e la riproduzione audio passa da `javafx-media`, quindi
+l'interfaccia mostra dati reali e suona. Restano da fare playlist persistenti,
+cue point, sincronizzazione online e test della GUI su display reale. Vedi
 [ Stato del progetto ](#stato-del-progetto).
 
-Snapshot della documentazione: commit `c8ee37b` ("UI Tweaks: auto-sizing, bigger
-proportions, removed mock data").
+Snapshot della documentazione: commit `f7b976a` ("feat: libreria locale reale al
+posto dei dati mock"), piu' le correzioni di compilazione di `HEAD`.
 
 ---
 
@@ -60,16 +61,24 @@ CueMyMusic/
     │   ├── App.java              Entry point + navigazione tra schermate
     │   ├── LoginController.java  Schermata di scelta della modalità d'accesso
     │   └── MainController.java   Schermata principale (libreria, coda, barra)
+    └── src/test/java/com/cuemymusic/
+        ├── MediaFilesTest.java     Regole di validazione e formattazione
+        ├── LibraryServiceTest.java  Scansione reale, senza avviare il toolkit
+        └── FxmlContractTest.java   Contratto FXML ↔ controller
     └── resources/com/cuemymusic/
         ├── fxml/login.fxml       Layout della schermata di login
         ├── fxml/main.fxml        Layout a 3 colonne della schermata principale
-        ├── css/styles.css        Tema scuro globale (185 righe)
-        └── fonts/                Comfortaa-Regular.ttf (non caricato)
+        ├── css/styles.css        Tema scuro globale (434 righe)
+        └── fonts/                Comfortaa-Regular.ttf
 ```
 
-Solo tre dipendenze, tutte `org.openjfx`: `javafx-controls`, `javafx-fxml` e
-`javafx-media`. **Nota:** `javafx-media` è attualmente inutilizzata — non c'è nessun
-`MediaPlayer` nel codice.
+Quattro dipendenze, tutte `org.openjfx` tranne JUnit 5: `javafx-controls`,
+`javafx-fxml`, `javafx-media` (usata da `MediaPlayer`) e `junit-jupiter` in scope
+`test`.
+
+`./mvnw clean package` produce un jar **non avviabile**: il `pom.xml` non imposta
+un `Main-Class` nel manifest e non include le dipendenze. Per la distribuzione
+serve `jpackage` o `jlink`. `./mvnw javafx:run` è il modo supportato per avviare.
 
 ## Flusso utente
 
@@ -78,11 +87,13 @@ Avvio
   └─► Schermata di login / scelta modalità
         ├─ "Avvia in Locale"  ─┐
         └─ "Accedi" (user/pw) ─┴─► Schermata principale (a schermo intero)
+                                      ├─ "Apri cartella…" → scansione in background
                                       ├─ 4 liste: Playlist, Libreria Locale,
                                       │            Ascoltati di Recente, Coda
-                                      ├─ Barra di riproduzione (titolo, artista,
-                                      │   play/pausa, seek, fullscreen)
-                                      └─ Copertina (segnaposto grigio)
+                                      ├─ Doppio click su un brano → riproduzione
+                                      ├─ Cerca per artista o titolo
+                                      └─ Barra di riproduzione (titolo, artista,
+                                         play/pausa, seek, volume, fullscreen)
 ```
 
 Entrambe le opzioni di accesso portano alla stessa schermata: **non esiste
@@ -96,27 +107,60 @@ Cosa **funziona**:
 - Avvio, caricamento FXML, navigazione login → main
 - Tema scuro applicato globalmente e anche alle finestre di dialogo
 - Gestione del fullscreen e ridimensionamento automatico della finestra iniziale
+- Scansione della libreria su thread di background: cartelle nascoste saltate,
+  link simbolici non seguiti, tetto di 20.000 brani e progress indicator
+- Riproduzione audio con `MediaPlayer`: seek, volume, mute, fine brano, coda
+- Filtro di ricerca su artista e titolo, con stato vuoto distinto
+- Scorciatoie da tastiera (Spazio, F11, M, Ctrl+frecce, +/-)
+- 35 test JUnit 5 sulla logica di scansione, sulle regole di validazione e sul
+  contratto FXML ↔ controller
 
 Cosa **non è ancora implementato**:
 
-- Riproduzione audio (nessun uso di `javafx-media`)
-- Scansione della libreria locale su filesystem
-- Persistenza delle playlist
+- Persistenza delle playlist e della libreria (ogni avvio richiede di riscegliere
+  la cartella)
 - Autenticazione e sincronizzazione con `CMM.cristianrenosto.party`
-- Cue point, coda di riproduzione e navigazione traccia precedente/successiva
-- Test automatici (nessuna directory `src/test`)
+- Cue point e navigazione dedicata traccia precedente/successiva dalla coda
+- Lettura dei tag ID3: artista e titolo sono dedotti dal filesystem
+- Test della GUI su display reale (qui non è stato possibile: vedi §Verifica)
 
-Ci sono inoltre due dettagli noti, analizzati nel dettaglio in
-[`docs.md`](./docs.md): il pulsante play/pausa è **sempre** irraggiungibile perché il
-flag `hasMedia` non viene mai impostato a `true`, e i pulsanti traccia
-precedente/successiva non hanno handler associato.
+I due difetti segnalati in [`docs.md`](./docs.md) sono chiusi: il pulsante
+play/pausa è ora abilitato non appena il brano ha una durata conosciuta, e i
+pulsanti precedente/successiva hanno handler e scorciatoie da tastiera.
+
+## Verifica
+
+Cosa è stato provato davvero, su questo repository:
+
+| Cosa | Come | Esito |
+|---|---|---|
+| Compilazione | `./mvnw clean compile` | ✅ |
+| Test | `./mvnw clean test` | ✅ 35/35 |
+| Packaging | `./mvnw clean package` | ✅ (jar non avviabile, come da nota) |
+| Scansione libreria | `LibraryServiceTest`, 14 casi: cartelle nascoste, symlink interni ed esterni, file vuoti, ordinamento, metadati | ✅ |
+| Contratto FXML ↔ controller | `FxmlContractTest`: `fx:id`, `onAction`, `styleClass` e risorse | ✅ |
+
+Cosa **non** è stato possibile provare qui, e perche':
+
+- **L'avvio della GUI.** JavaFX 21.0.1 su Linux è solo X11 (il `libglassgtk3.so`
+  di questa build non contiene simboli Wayland) e in questa macchina gira solo un
+  compositor Wayland, senza XWayland né `Xvfb`. Senza display non si puo' avviare
+  il toolkit, quindi `javafx:run` non è stato eseguito.
+- **La riproduzione audio.** `javafx-media` usa GStreamer di sistema, e qui
+  mancano i demuxer (`wavparse`, `id3demux` non sono installati: il sistema ha
+  `gst-plugins-base-libs` e `gst-plugins-bad-libs`, non `gst-plugins-good`). Il
+  codice è corretto dal punto di vista delle API, ma non è stato possibile
+  sentire un brano.
+
+Entrambe le verifiche vanno rifatte su una macchina con display X11 (o XWayland) e
+`gst-plugins-good` installato.
 
 ## Documentazione
 
 | File | Contenuto |
 |---|---|
 | [`docs.md`](./docs.md) | Architettura, scene graph, design system, analisi del codice morto, gap e roadmap |
-| `Code_Explanation.md` | Spiegazione annotata del codice — **parzialmente obsoleta** |
+| `Code_Explanation.md` | Spiegazione annotata del codice — **obsoleta**: precede la libreria e la riproduzione |
 | `Code_Explanation_Update1.md` | Delta del commit "UI Tweaks" — accurate ma incompleto |
 
 ## Licenza
@@ -129,15 +173,15 @@ External material covering the same ground. The cross-repo map, with the same
 links for all seven projects, is in `~/Progetti/RESOURCES.md`.
 
 CueMyMusic has the smallest footprint in this collection, so the honest mapping
-is narrower than for the other six. The one substantial gap in the project — no
-audio playback, with `javafx-media` declared but unused — is a Web Audio
-problem, and that is where the material concentrates.
+is narrower than for the other six. Playback and library scanning are now wired
+up, so the open questions are the cue-point model the app is named after, tag
+parsing, and GUI testing on a real display.
 
 ### Build it from scratch
 
 - [Awesome Web Audio](https://github.com/notthetup/awesome-webaudio) — the
-  closest thing to a syllabus for what `javafx-media` would need: playback
-  state, buffering, and the cue-point model the README lists as missing.
+  playback-state model behind `MediaPlayer`: buffering, end-of-media, and the
+  cue-point semantics the README still lists as missing.
 - [Crafting interpreters](http://www.craftinginterpreters.com/) *(Java)* —
   background for the screen-graph navigation in `App.java`, a small state
   machine over FXML-loaded scenes.

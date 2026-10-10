@@ -110,6 +110,8 @@ public class MainController {
     private Track currentTrack;
 
     private LibraryService libraryService;
+    /** Radice dell'ultima scansione riuscita: "Aggiorna" la rilegge, non la indovina. */
+    private Path libraryRoot;
     private MediaLoadTask mediaLoadTask;
     private Timeline pollTimer;
     private PauseTransition searchDebounce;
@@ -174,7 +176,7 @@ public class MainController {
                     }
                 }
             });
-            list.setAccessibleRole(AccessibleRole.LIST);
+            list.setAccessibleRole(AccessibleRole.LIST_VIEW);
         }
 
         queueCountLabel.textProperty().bind(Bindings.size(queue).asString());
@@ -184,13 +186,17 @@ public class MainController {
         addToQueueButton.disableProperty().bind(
                 Bindings.createBooleanBinding(
                         () -> localFilesList.getSelectionModel().getSelectedItem() == null,
-                        localFilesList.selectionModel().selectedItemProperty()));
+                        localFilesList.getSelectionModel().selectedItemProperty()));
 
         // Il riquadro "libreria vuota" appare solo quando non c'e' davvero nulla
-        // da mostrare, filtraggio incluso.
+        // da mostrare. Osserva sia la libreria sia la proprieta' items, perche'
+        // applyFilter() sostituisce la lista con una filtrata: senza il secondo
+        // osservabile, un filtro senza risultati darebbe una lista vuota e
+        // nessun messaggio.
         emptyStateBox.visibleProperty().bind(
                 Bindings.createBooleanBinding(
-                        () -> library.isEmpty(), localFilesList.itemsProperty()));
+                        () -> localFilesList.getItems().isEmpty(),
+                        library, localFilesList.itemsProperty()));
     }
 
     /**
@@ -307,7 +313,10 @@ public class MainController {
             // Il filtro viene ricalcolato una volta per raffica di tasti: con
             // decine di migliaia di elementi ricalcolarlo a ogni keypress
             // saturerebbe l'FX thread.
-            searchDebounce = new PauseTransition(Duration.millis(220), () -> applyFilter(value));
+            // PauseTransition non ha un costruttore (Duration, Runnable):
+            // l'azione va agganciata a setOnFinished.
+            searchDebounce = new PauseTransition(Duration.millis(220));
+            searchDebounce.setOnFinished(event -> applyFilter(value));
             searchDebounce.play();
         });
     }
@@ -384,7 +393,7 @@ public class MainController {
                 case F11 -> toggleFullscreen();
                 case M -> toggleMute();
                 case ADD, EQUALS, UP -> nudgeVolume(VOLUME_STEP);
-                case SUBTRACT, HYPHEN, DOWN -> nudgeVolume(-VOLUME_STEP);
+                case SUBTRACT, MINUS, DOWN -> nudgeVolume(-VOLUME_STEP);
                 case ESCAPE -> {
                     Stage stage = App.getPrimaryStage();
                     if (stage != null && stage.isFullScreen()) {
@@ -407,9 +416,11 @@ public class MainController {
     private void handleChooseFolder() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Scegli la cartella della libreria musicale");
-        chooser.setInitialDirectory(
-                library.isEmpty() ? new File(System.getProperty("user.home"))
-                        : library.get(0).file().getParent().toFile());
+        File start = libraryRoot != null ? libraryRoot.toFile()
+                : new File(System.getProperty("user.home"));
+        if (start.isDirectory()) {
+            chooser.setInitialDirectory(start);
+        }
         File chosen = chooser.showOpenDialog(rootPane.getScene() == null ? null : rootPane.getScene().getWindow());
         if (chosen == null) {
             return;
@@ -424,8 +435,14 @@ public class MainController {
 
     /** Avvia la scansione in background, annullando un eventuale scan in corso. */
     public void scanLibrary(Path root) {
+        if (root == null) {
+            return;
+        }
         if (libraryService != null) {
-            libraryService.cancel(true);
+            // Service.cancel() non accetta argomenti: interrompe il task in
+            // corso e attende il worker, quindi l'istanza va sostituita per
+            // poter riavviare la scansione (un Service non e' riavviabile).
+            libraryService.cancel();
             libraryService = null;
         }
         LibraryService service;
@@ -436,13 +453,15 @@ public class MainController {
             return;
         }
         libraryService = service;
+        libraryRoot = root.toAbsolutePath().normalize();
         setBusy(true);
-        statusLabel.setText("Scansione di " + service.getRoot().getFileName() + "\u2026");
+        statusLabel.setText("Scansione di " + service.getRoot().getFileName() + "…");
 
         service.setOnSucceeded(event -> {
             List<Track> found = service.getValue();
+            // libraryCountLabel e' gia' legato a Bindings.size(library): il conteggio
+            // si aggiorna da solo con il setAll, senza un setText ridondante.
             library.setAll(found);
-            libraryCountLabel.setText("Brani in libreria: " + found.size());
             setBusy(false);
             if (found.isEmpty()) {
                 statusLabel.setText("Nessun brano audio trovato in questa cartella.");
@@ -464,8 +483,12 @@ public class MainController {
 
     @FXML
     private void handleRefresh() {
-        if (!library.isEmpty()) {
-            scanLibrary(library.get(0).file().getParent());
+        // Si ripete la scansione della cartella scelta, non di quella che per
+        // caso contiene il primo brano in lista: i brani stanno in sottocartelle
+        // (una per artista) e con il parent del primo elemento si aggiornerebbe
+        // una sola di quelle, svuotando di fatto la libreria.
+        if (libraryRoot != null && Files.isDirectory(libraryRoot)) {
+            scanLibrary(libraryRoot);
         } else {
             handleChooseFolder();
         }
@@ -585,7 +608,7 @@ public class MainController {
         }
         mediaLoadTask.setOnSucceeded(event -> {
             setBusy(false);
-            attachMedia(mediaLoadTask.getResult(), track);
+            attachMedia(mediaLoadTask.getValue(), track);
             mediaLoadTask = null;
         });
         mediaLoadTask.setOnFailed(event -> {
@@ -700,7 +723,9 @@ public class MainController {
             // per frame, cosi' il trascinamento non genera 100 seek al secondo.
             pendingSeek = false;
             Duration target = Duration.seconds(progressBar.getValue());
-            if (!target.isNegative() && !target.equals(Duration.ZERO)) {
+            // Duration non ha isNegative(): lessThan(ZERO) e' l'espressione
+            // equivalente, oltre che piu' leggibile.
+            if (!target.lessThan(Duration.ZERO) && !target.equals(Duration.ZERO)) {
                 active.seek(target);
             }
         }

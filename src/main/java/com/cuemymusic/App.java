@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +50,7 @@ public class App extends Application {
         stage.setTitle("CueMyMusic");
         stage.setMinWidth(820);
         stage.setMinHeight(560);
+        installWindowIcon(stage);
         stage.sizeToScene();
         stage.show();
 
@@ -146,10 +146,18 @@ public class App extends Application {
         }
     }
 
-    /** Applica il tema a una finestra secondaria (dialog, popup). */
-    static void applyStylesheet(Window target) {
+    /**
+     * Applica il tema a una finestra secondaria (dialog, popup).
+     *
+     * <p>Il parametro e' un {@link Parent} e non un {@link Window}: e'
+     * {@code getStylesheets()} a vivere su {@link Parent}, ed e' li' che il
+     * chiamante deve agganciare il tema (in {@code showError} e' il
+     * {@code DialogPane}). Con {@code Window} il metodo non compilava.</p>
+     */
+    static void applyStylesheet(Parent target) {
         URL css = App.class.getResource(STYLESHEET_PATH);
         if (css == null || target == null) {
+            LOG.warning("Foglio di stile non trovato: " + STYLESHEET_PATH);
             return;
         }
         String external = css.toExternalForm();

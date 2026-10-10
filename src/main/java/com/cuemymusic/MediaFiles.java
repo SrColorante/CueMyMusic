@@ -113,7 +113,9 @@ final class MediaFiles {
             Path realRoot = root.toRealPath();
             Path realCandidate = candidate.toRealPath();
             return !realCandidate.equals(realRoot) && realCandidate.startsWith(realRoot);
-        } catch (IOException | SecurityException | RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
+            // SecurityException e' una RuntimeException: accorparla evita un
+            // multi-catch con alternative imparentate, che il compilatore rifiuta.
             return false;
         }
     }
@@ -133,11 +135,15 @@ final class MediaFiles {
     /**
      * Sanitizza un testo destinato a essere mostrato in UI.
      *
-     * <p>Rimuove i caratteri di controllo C0/C1 e le direzionali Unicode
-     * (U+202A-U+202E, U+2066-U+2069, U+200E/U+200F): senza questo filtro un file
-     * chiamato {@code "track\u202Egnp.exe.mp3"} mostrerebbe in interfaccia
-     * un nome completamente diverso da quello reale (attacco "Trojan Source").
-     * Collassa inoltre gli spazi ripetuti e tronca alla lunghezza massima.</p>
+     * <p>I caratteri pericolosi non <i>svaniscono</i>: diventano un separatore.
+     * Un file chiamato {@code "track\u202Egnp.exe.mp3"} mostra in interfaccia
+     * {@code "track gnp.exe.mp3"} e non {@code "trackgnp.exe.mp3"}: lo spazio
+     * rende evidente che il nome e' composto, invece di ricomporlo di nascosto
+     * (attacco "Trojan Source").</p>
+     *
+     * <p>Sono filtrati i caratteri di controllo C0/C1, le direzionali Unicode
+     * (U+202A-U+202E, U+2066-U+2069, U+200E/U+200F) e il soft hyphen; gli spazi
+     * ripetuti sono collassati e il testo e' troncato alla lunghezza massima.</p>
      */
     static String sanitizeForDisplay(String raw) {
         if (raw == null || raw.isEmpty()) {

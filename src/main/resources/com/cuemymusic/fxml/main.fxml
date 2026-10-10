@@ -50,7 +50,7 @@
     </top>
 
     <center>
-        <GridPane hgap="14.0" vgap="14.0" fx:id="contentGrid">
+        <GridPane hgap="14.0" vgap="14.0">
             <padding>
                 <Insets top="0.0" right="18.0" bottom="0.0" left="18.0"/>
             </padding>
